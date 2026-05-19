@@ -5,7 +5,7 @@ from datetime import datetime, time
 
 # Configuration
 BASE_DATA_DIR = r'C:\Users\faizz\OneDrive - MARA Japan Industrial Institute\Desktop\FYP\File for Coding\Pothole project\data'
-CSV_PATH = os.path.join(BASE_DATA_DIR, 'potholes.csv')
+CSV_PATH = os.path.join(BASE_DATA_DIR, 'datapotholes.csv')
 IMAGE_FOLDER = os.path.join(BASE_DATA_DIR, 'images')
 
 st.set_page_config(page_title="Pothole Telemetry System", layout="wide")
