@@ -8,8 +8,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 1. List of possible places the CSV could be sitting
 possible_csv_paths = [
-    os.path.join(BASE_DIR, 'data', 'potholes.csv'),   # Inside data folder
-    os.path.join(BASE_DIR, 'potholes.csv'),          # In the main root folder
+    os.path.join(BASE_DIR, 'data', 'potholes.csv'),  # Plural inside data folder
+    os.path.join(BASE_DIR, 'potholes.csv')           # Plural in the main root folder
 ]
 
 # 2. Automatically find which path actually exists
@@ -27,13 +27,6 @@ else:
 
 st.set_page_config(page_title="Pothole Telemetry System", layout="wide")
 st.title("🚧 Multi-Day Road Maintenance Log")
-
-# --- DEBUG DISPLAY (Tells us exactly what the AI system found) ---
-with st.expander("🔍 Smart Path Finder Details", expanded=False):
-    if CSV_PATH:
-        st.success(f"✅ Successfully located your file at: `{CSV_PATH}`")
-    else:
-        st.error("❌ Could not find 'datapothole.csv' anywhere in the workspace.")
 
 def load_data():
     if CSV_PATH and os.path.exists(CSV_PATH):
@@ -78,7 +71,6 @@ if not df.empty:
         col1, col2 = st.columns([1.5, 1])
         with col1:
             st.subheader("Visual Evidence")
-            # Try matching both time string formats
             img_name = event['timestamp'].strftime("%H%M%S") + ".jpg" 
             img_path = os.path.join(IMAGE_FOLDER, img_name) 
             
@@ -94,5 +86,15 @@ if not df.empty:
             st.map(pd.DataFrame({'lat': [event['latitude']], 'lon': [event['longitude']]}))
     else:
         st.warning("No detections found for the selected time range.")
+        
 else:
-    st.error("Data file is empty or missing. Please ensure your file contains columns: timestamp, latitude, longitude, z_axis_g.")
+    # --- AUTOMATIC ERROR FALLBACK ---
+    # This panel ONLY appears if 'df.empty' is True (meaning data is missing/broken)
+    with st.expander("🔍 System Troubleshooting Panel (Data Load Failure)", expanded=True):
+        if CSV_PATH:
+            st.success(f"✅ File located at: `{CSV_PATH}` but it appears to contain no data rows.")
+        else:
+            st.error("❌ Could not find 'datapothole.csv' anywhere in the workspace directory layout.")
+            st.info("Ensure your file is named exactly `datapothole.csv` and placed in your main folder or a folder named `data`.")
+            
+    st.error("Missing Data Error: The telemetry dashboard cannot render because no valid data rows were loaded.")
